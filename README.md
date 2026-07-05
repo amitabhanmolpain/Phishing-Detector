@@ -40,3 +40,46 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+## WhatsApp Integration
+
+Users can forward suspicious messages directly to a WhatsApp number and get a verdict + report link back automatically, powered by Twilio's WhatsApp Sandbox.
+
+**Setup:**
+1. Sign up for Twilio and activate the WhatsApp Sandbox (**Console → Messaging → Try it out → WhatsApp**).
+2. Join the sandbox from your phone using the provided code.
+3. Expose your local backend publicly (for testing) using ngrok:
+   ```bash
+   ngrok http 8000
+   ```
+4. In Twilio Sandbox Settings, set **"When a message comes in"** to:
+   `https://<your-ngrok-url>/whatsapp-webhook` (Method: `POST`).
+
+*Note: Free ngrok URLs change every restart — update the Twilio webhook and `.env` values each time you restart ngrok.*
+
+## Result Reports
+
+Each scan is saved with a short ID and viewable at `/result/{id}` on the frontend. Currently stored in-memory (`store.py`) — results are lost on backend restart. Swap for a real DB (SQLite/Postgres/Redis) for persistence.
+
+## Environment Variables
+
+### Backend (`backend/.env`)
+```env
+GOOGLE_SAFE_BROWSING_API_KEY= # optional
+CORS_ORIGINS=http://localhost:3000,https://<your-vercel-url>
+WEBSITE_URL=https://<your-frontend-url>
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+```
+
+### Frontend (`frontend/.env.local`)
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+## Deployment
+
+- **Frontend** — deployed on Vercel, set `NEXT_PUBLIC_API_URL` in project Environment Variables to the public backend URL.
+- **Backend** — currently run locally + exposed via ngrok during testing. For a permanent setup, deploy to Railway/Fly.io (persistent server needed — avoid serverless platforms since result storage is in-memory).
+
+**Important:** If using ngrok, all fetch calls from the frontend must include the header `"ngrok-skip-browser-warning": "true"` to bypass ngrok's free-tier interstitial page.
