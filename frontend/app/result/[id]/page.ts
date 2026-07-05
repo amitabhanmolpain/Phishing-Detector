@@ -31,7 +31,11 @@ export default function ResultPage() {
       setErrorMessage("");
       try {
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-        const response = await fetch(`${apiBaseUrl}/api/result/${id}`);
+        const response = await fetch(`${apiBaseUrl}/api/result/${id}`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to retrieve result.");
         }
