@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SHIELD // Scam URL & Message Checker",
+  title: "Phishing Detector // Scam URL & Message Checker",
   description: "Instantly check links and message text for scam attempts, phishing, typosquatting, or fraudulent content. Stay safe online.",
 };
 

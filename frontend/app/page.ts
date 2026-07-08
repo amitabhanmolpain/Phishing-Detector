@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import VerdictCard from "../components/VerdictCard";
 import HistoryList from "../components/HistoryList";
 
@@ -64,12 +64,8 @@ export default function Home() {
     return false;
   };
 
-  useEffect(() => {
-    if (!autoDetect || !input.trim()) return;
+  const currentMode = autoDetect && input.trim() ? (checkIsUrl(input) ? "URL" : "Message") : mode;
 
-    const isUrl = checkIsUrl(input);
-    setMode(isUrl ? "URL" : "Message");
-  }, [input, autoDetect]);
 
   const handleModeChange = (newMode: "URL" | "Message") => {
     setMode(newMode);
@@ -91,8 +87,8 @@ export default function Home() {
 
     try {
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const endpoint = mode === "URL" ? `${apiBaseUrl}/check-url` : `${apiBaseUrl}/check-text`;
-      const payload = mode === "URL" ? { url: trimmedInput } : { text: trimmedInput };
+      const endpoint = currentMode === "URL" ? `${apiBaseUrl}/check-url` : `${apiBaseUrl}/check-text`;
+      const payload = currentMode === "URL" ? { url: trimmedInput } : { text: trimmedInput };
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -122,7 +118,7 @@ export default function Home() {
       const newHistoryItem: HistoryItem = {
         id: Math.random().toString(36).substring(2, 9),
         input: trimmedInput,
-        type: mode,
+        type: currentMode,
         verdict: data.verdict,
         reason: data.reason,
         details: data.details,
@@ -133,9 +129,10 @@ export default function Home() {
         const filtered = prevHistory.filter((item) => item.input !== trimmedInput);
         return [newHistoryItem, ...filtered].slice(0, 5);
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setErrorMessage(err.message || "An unexpected network error occurred.");
+      const message = err instanceof Error ? err.message : "An unexpected network error occurred.";
+      setErrorMessage(message);
     } finally {
       setIsLoading(false);
     }
@@ -160,7 +157,7 @@ export default function Home() {
       "header",
       { className: "app-header" },
       React.createElement("div", { className: "header-cyber-tag" }, "// SECURE SYSTEM //"),
-      React.createElement("h1", { className: "app-title" }, "SHIELD Scanner"),
+      React.createElement("h1", { className: "app-title" }, "Phishing Detector"),
       React.createElement(
         "p",
         { className: "app-subtitle" },
@@ -169,7 +166,7 @@ export default function Home() {
     ),
     React.createElement(
       "section",
-      { className: "dashboard-card", "aria-label": "Scam Scanner Panel" },
+      { className: "dashboard-card", "aria-label": "Phishing Detector Panel" },
       React.createElement(
         "form",
         { onSubmit: handleSubmit, className: "form-group" },
@@ -183,7 +180,7 @@ export default function Home() {
               "button",
               {
                 type: "button",
-                className: `toggle-btn ${mode === "URL" ? "active" : ""}`,
+                className: `toggle-btn ${currentMode === "URL" ? "active" : ""}`,
                 onClick: () => handleModeChange("URL"),
               },
               "🌐 Check URL"
@@ -192,7 +189,7 @@ export default function Home() {
               "button",
               {
                 type: "button",
-                className: `toggle-btn ${mode === "Message" ? "active" : ""}`,
+                className: `toggle-btn ${currentMode === "Message" ? "active" : ""}`,
                 onClick: () => handleModeChange("Message"),
               },
               "💬 Check Message"
@@ -245,7 +242,7 @@ export default function Home() {
             onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value),
             className: "cyber-textarea",
             placeholder:
-              mode === "URL"
+              currentMode === "URL"
                 ? "Paste link here (e.g. sbi-login-portal.net, amazon.claim-prize.top)..."
                 : "Paste text message here (e.g. 'Congratulations! You won 1 Crore lottery...')",
             "aria-label": "Input field for link or message to inspect",

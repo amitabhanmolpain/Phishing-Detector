@@ -45,9 +45,10 @@ export default function ResultPage() {
         } else {
           setResult(data);
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error(err);
-        setErrorMessage(err.message || "An unexpected network error occurred.");
+        const message = err instanceof Error ? err.message : "An unexpected network error occurred.";
+        setErrorMessage(message);
       } finally {
         setIsLoading(false);
       }
@@ -83,7 +84,7 @@ export default function ResultPage() {
       "header",
       { className: "app-header" },
       React.createElement("div", { className: "header-cyber-tag" }, "// SECURE SYSTEM //"),
-      React.createElement("h1", { className: "app-title" }, "SHIELD Scanner"),
+      React.createElement("h1", { className: "app-title" }, "Phishing Detector"),
       React.createElement(
         "p",
         { className: "app-subtitle" },
