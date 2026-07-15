@@ -83,3 +83,12 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 - **Backend** — currently run locally + exposed via ngrok during testing. For a permanent setup, deploy to Railway/Fly.io (persistent server needed — avoid serverless platforms since result storage is in-memory).
 
 **Important:** If using ngrok, all fetch calls from the frontend must include the header `"ngrok-skip-browser-warning": "true"` to bypass ngrok's free-tier interstitial page.
+
+## Screenshots
+
+### Web Interface
+![Web Interface](frontend/public/phish-2.jpg)
+
+### WhatsApp Bot Integration
+![WhatsApp Bot Integration](frontend/public/phish-1.jpg)
+
